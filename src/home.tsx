@@ -1,40 +1,56 @@
 import React, { useState, useEffect } from "react";
 import Login from "./login";
 import Navigation from "./navigation";
-import { Stack } from "@mui/material";
+import { Box, ThemeProvider, createTheme } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { amber, teal } from "@mui/material/colors";
 
 const Home = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [escaped, setEscaped] = useState(false);
 
   useEffect(() => {
-    // Fetch the user email and token from local storage
-    const storedUser = JSON.parse(localStorage.getItem("user")!);
+    const weddingData = JSON.parse(localStorage.getItem("youghal-data")!);
 
-    // If the username does not exist, mark the user as logged out
-    if (!storedUser || !storedUser.username) {
-      setLoggedIn(false);
-      return;
+    if (!weddingData?.success) {
+      setEscaped(false);
     } else {
-      setLoggedIn(true);
+      setEscaped(true);
     }
   }, []);
 
-  console.log(loggedIn);
+  const theme = createTheme({
+    palette: {
+      primary: teal,
+      secondary: amber,
+    },
+  });
+
+  const handleClear = () => {
+    const result = { success: false };
+    localStorage.setItem("youghal-data", JSON.stringify(result));
+    setEscaped(false);
+  };
 
   return (
-    <Stack
-      alignItems="center"
-      justifyContent="center"
-      sx={{ height: "100vh", backgroundColor: "black" }}
-    >
-      {loggedIn ? <Navigation /> : <Login setLoggedIn={setLoggedIn} />}
-      <input
-        className={"inputButton"}
-        type="button"
-        onClick={() => setLoggedIn(false)}
-        value={"Clear"}
-      />
-    </Stack>
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="100vh"
+        >
+          {escaped ? <Navigation /> : <Login setEscaped={setEscaped} />}
+        </Box>
+        <input
+          className={"inputButton"}
+          type="button"
+          onClick={() => handleClear()}
+          value={"Clear"}
+        />
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 };
 
