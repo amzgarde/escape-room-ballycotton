@@ -5,17 +5,23 @@ import { Box, ThemeProvider, createTheme } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { amber, teal } from "@mui/material/colors";
+import Success from "./success";
 
 const Home = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [escaped, setEscaped] = useState(false);
 
   useEffect(() => {
-    const weddingData = JSON.parse(localStorage.getItem("youghal-data")!);
+    const weddingData = JSON.parse(localStorage.getItem("ballycotton-data")!);
 
-    if (!weddingData?.success) {
-      setEscaped(false);
+    if (weddingData?.loggedIn) {
+      setLoggedIn(true);
+      if (weddingData.navigation) {
+        setEscaped(true);
+      }
     } else {
-      setEscaped(true);
+      setLoggedIn(false);
+      setEscaped(false);
     }
   }, []);
 
@@ -27,8 +33,9 @@ const Home = () => {
   });
 
   const handleClear = () => {
-    const result = { success: false };
-    localStorage.setItem("youghal-data", JSON.stringify(result));
+    const result = { loggedIn: false, navigation: false };
+    localStorage.setItem("ballycotton-data", JSON.stringify(result));
+    setLoggedIn(false);
     setEscaped(false);
   };
 
@@ -41,7 +48,9 @@ const Home = () => {
           alignItems="center"
           minHeight="100vh"
         >
-          {escaped ? <Navigation /> : <Login setEscaped={setEscaped} />}
+          {!loggedIn && <Login setLoggedIn={setLoggedIn} />}
+          {loggedIn && !escaped && <Navigation setEscaped={setEscaped} />}
+          {loggedIn && escaped && <Success />}
         </Box>
         <input
           className={"inputButton"}
