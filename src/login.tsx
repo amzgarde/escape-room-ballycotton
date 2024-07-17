@@ -7,7 +7,7 @@ const Login = ({ setLoggedIn }: { setLoggedIn: (l: boolean) => void }) => {
   const [error, setError] = useState(false);
 
   const handleSubmit = () => {
-    if (username === "captain" && password === "1207") {
+    if (username.toLowerCase() === "captain" && password === "1207") {
       setError(false);
       const result = { loggedIn: true, navigation: false };
       localStorage.setItem("ballycotton-data", JSON.stringify(result));
